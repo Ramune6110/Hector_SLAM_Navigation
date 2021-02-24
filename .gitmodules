@@ -1,0 +1,3 @@
+[submodule "submodule/rplidar_ros"]
+	path = submodule/rplidar_ros
+	url = https://github.com/Ramune6110/rplidar_ros.git
