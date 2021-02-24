@@ -1,3 +1,6 @@
 [submodule "submodule/rplidar_ros"]
 	path = submodule/rplidar_ros
 	url = https://github.com/Ramune6110/rplidar_ros.git
+[submodule "submodule/hector_slam"]
+	path = submodule/hector_slam
+	url = https://github.com/Ramune6110/hector_slam.git
