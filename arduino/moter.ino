@@ -54,8 +54,8 @@ void setup(){
 }
 
 void loop(){
-  MotorL(w_l * 24);
-  MotorR(w_r*  24);
+  MotorL(w_l * 30);
+  MotorR(w_r*  30);
   nh.spinOnce();
 }
 
@@ -79,6 +79,10 @@ void Motors_init(){
 
 void MotorL(int Pulse_Width1){
  if (Pulse_Width1 > 0){
+     if (Pulse_Width1 > 240) {
+        Pulse_Width1 = 240;
+     }
+
      analogWrite(EN_L, Pulse_Width1);
      digitalWrite(IN1_L, LOW);
      digitalWrite(IN2_L, HIGH);
@@ -86,6 +90,10 @@ void MotorL(int Pulse_Width1){
 
  if (Pulse_Width1 < 0){
      Pulse_Width1=abs(Pulse_Width1);
+     if (Pulse_Width1 > 240) {
+        Pulse_Width1 = 240;
+     }
+
      analogWrite(EN_L, Pulse_Width1);
      digitalWrite(IN1_L, HIGH);
      digitalWrite(IN2_L, LOW);
@@ -100,6 +108,10 @@ void MotorL(int Pulse_Width1){
 
 void MotorR(int Pulse_Width2){
  if (Pulse_Width2 > 0){
+     if (Pulse_Width2 > 240) {
+        Pulse_Width2 = 240;
+     }
+
      analogWrite(EN_R, Pulse_Width2);
      digitalWrite(IN1_R, LOW);
      digitalWrite(IN2_R, HIGH);
@@ -107,6 +119,10 @@ void MotorR(int Pulse_Width2){
 
  if (Pulse_Width2 < 0){
      Pulse_Width2=abs(Pulse_Width2);
+     if (Pulse_Width2 > 240) {
+        Pulse_Width2 = 240;
+     }
+     
      analogWrite(EN_R, Pulse_Width2);
      digitalWrite(IN1_R, HIGH);
      digitalWrite(IN2_R, LOW);
