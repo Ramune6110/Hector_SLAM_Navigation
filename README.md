@@ -11,11 +11,19 @@ Hector SLAM is used for localisation, with DWA local planner planner for path pl
 <img src="https://user-images.githubusercontent.com/52307432/109670191-35b12c00-7bb6-11eb-99ef-db25a7fd88f2.jpg" alt="Your image title"  width="800">
 </div>
 
-## Gazebo simulation Movie
+## Rviz Movie
+
+<div align="center">
+<img src="https://user-images.githubusercontent.com/52307432/109670191-35b12c00-7bb6-11eb-99ef-db25a7fd88f2.jpg" alt="Your image title"  width="800">
+</div>
 
 Simulation [Link Here](https://user-images.githubusercontent.com/52307432/108248440-3221ac00-7197-11eb-89a6-85a4acc00491.mp4)
 
 ## Experiment Movie
+
+<div align="center">
+<img src="https://user-images.githubusercontent.com/52307432/109670191-35b12c00-7bb6-11eb-99ef-db25a7fd88f2.jpg" alt="Your image title"  width="800">
+</div>
 
 1. Actual situation [Link Here](https://user-images.githubusercontent.com/52307432/108245357-87f45500-7193-11eb-86a6-40e8a15917b9.mp4
 )
