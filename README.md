@@ -8,7 +8,7 @@ Hector SLAM is used for localisation, with DWA local planner planner for path pl
 
 ## Robot Model
 <div align="center">
-<img src="https://user-images.githubusercontent.com/52307432/109670191-35b12c00-7bb6-11eb-99ef-db25a7fd88f2.jpg" alt="Your image title"  width="400">
+<img src="https://user-images.githubusercontent.com/52307432/109670191-35b12c00-7bb6-11eb-99ef-db25a7fd88f2.jpg" alt="Your image title"  width="800">
 </div>
 
 ## Gazebo simulation Movie
