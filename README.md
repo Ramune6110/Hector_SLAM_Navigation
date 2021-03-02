@@ -1,4 +1,4 @@
-# Hector-SLAM using ROS Navigation Stack
+# Hector SLAM using ROS Navigation Stack
 Hector SLAM is used for localisation, with DWA local planner planner for path planning.
 ## Sensors used
 1. RPLIDAR A1M8
