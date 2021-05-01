@@ -13,7 +13,7 @@ import numpy as np
 from darknet_ros_msgs.msg import BoundingBoxes,BoundingBox
 import cv2
 
-class PersonDetector():
+class OutdoorDetector():
     def __init__(self):
 
         # cv_bridge handles
@@ -286,7 +286,7 @@ class PersonDetector():
 if __name__ == '__main__':
     try:
         rospy.init_node('person_detector', anonymous=True)
-        idc = PersonDetector()
+        idc = OutdoorDetector()
         rospy.loginfo('idc Initialized')
         rospy.spin()
 
