@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(Hector-SLAM-Navigation)
 
 find_package(catkin REQUIRED COMPONENTS
+  rospy
   roscpp
   move_base
   actionlib
@@ -16,7 +17,7 @@ pkg_search_module(yaml-cpp REQUIRED yaml-cpp)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES hector-slam-navigation
-  CATKIN_DEPENDS actionlib geometry_msgs move_base roscpp tf visualization_msgs
+  CATKIN_DEPENDS actionlib geometry_msgs move_base rospy roscpp tf visualization_msgs
 #  DEPENDS system_lib
 )
 
