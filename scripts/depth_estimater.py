@@ -17,7 +17,8 @@ class depth_estimater:
         rospy.init_node('depth_estimater', anonymous=True)
         self.bridge = CvBridge()
         sub_rgb = message_filters.Subscriber("/camera/color/image_raw",Image)
-        sub_depth = message_filters.Subscriber("/camera/depth/image_rect_raw",Image)
+        #sub_depth = message_filters.Subscriber("/camera/depth/image_rect_raw",Image)
+        sub_depth = message_filters.Subscriber("/camera/aligned_depth_to_color/image_raw",Image)
         self.mf = message_filters.ApproximateTimeSynchronizer([sub_rgb, sub_depth], 100, 10.0)
         self.mf.registerCallback(self.ImageCallback)
  

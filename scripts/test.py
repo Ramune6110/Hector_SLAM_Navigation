@@ -38,7 +38,8 @@ class PersonDetector():
         except CvBridgeError, e:
             rospy.logerr(e)
 
-        rgb_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2RGB)
+        rgb_image.flags.writeable = True
+        rgb_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2RGB
 
         # 人がいる場合
         if self.person_bbox.probability > 0.0:
@@ -46,8 +47,26 @@ class PersonDetector():
            # 一旦、BoundingBoxの中心位置の深度を取得 (今後改善予定）
             m_person_depth = self.m_depth_image[(int)(self.person_bbox.ymax+self.person_bbox.ymin)/2][(int)(self.person_bbox.xmax+self.person_bbox.xmin)/2]
 
+            x1 = self.person_bbox.xmin
+            x2 = self.person_bbox.xmax
+            y1 = self.person_bbox.ymin
+            y2 = self.person_bbox.ymax
+            sum = 0.0
+    
+            for i in range(y1, y2):
+                for j in range(x1, x2):
+                    rgb_image.itemset((i, j, 0), 0)
+                    rgb_image.itemset((i, j, 1), 0)
+                    #color_image.itemset((100,100,2), 0)
+    
+                    if m_depth_image.item(i,j) == m_depth_image.item(i,j):
+                        sum += m_depth_image.item(i,j)
+    
+            ave = sum / (((x2 - x1) * 2) * ((y2 - y1)* 2))
+            print("%f [m]" % ave)
+
             cv2.rectangle(rgb_image, (self.person_bbox.xmin, self.person_bbox.ymin), (self.person_bbox.xmax, self.person_bbox.ymax),(0,0,255), 2)
-            rospy.loginfo('Class : person, Score: %.2f, Dist: %dmm ' %(self.person_bbox.probability, m_person_depth))
+            #rospy.loginfo('Class : person, Score: %.2f, Dist: %dmm ' %(self.person_bbox.probability, m_person_depth))
             text = "person " +('%dmm' % m_person_depth)
             text_top = (self.person_bbox.xmin, self.person_bbox.ymin - 10)
             text_bot = (self.person_bbox.xmin + 80, self.person_bbox.ymin + 5)
