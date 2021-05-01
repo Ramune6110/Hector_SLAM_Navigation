@@ -7,6 +7,7 @@ import threading
 
 # This import is for ROS integration
 import rospy
+import message_filters
 from sensor_msgs.msg import Image,CameraInfo
 from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
@@ -24,50 +25,73 @@ class PersonDetector():
         # ROS PARAM
         self.m_pub_threshold = rospy.get_param('~pub_threshold', 0.60)
 
+        # detect width height
+        self.WIDTH  = 100
+        self.HEIGHT = 100
+
         # Subscribe
-        sub_camera_rgb     =  rospy.Subscriber('/camera/color/image_raw', Image, self.CamRgbImageCallback)
-        sub_camera_depth   =  rospy.Subscriber('/camera/aligned_depth_to_color/image_raw', Image, self.CamDepthImageCallback)
+        sub_camera_rgb     =  message_filters.Subscriber("/camera/color/image_raw",Image)
+        sub_camera_depth   =  message_filters.Subscriber("/camera/aligned_depth_to_color/image_raw",Image)
         #sub_camera_depth   =  rospy.Subscriber('/camera/depth/image_rect_raw', Image, self.CamDepthImageCallback)
         sub_darknet_bbox   =  rospy.Subscriber('/darknet_ros/bounding_boxes', BoundingBoxes, self.DarknetBboxCallback)
+        self.mf = message_filters.ApproximateTimeSynchronizer([sub_camera_rgb, sub_camera_depth], 100, 10.0)
+        self.mf.registerCallback(self.ImageCallback)
 
         return
 
-    def CamRgbImageCallback(self, rgb_image_data):
+    def ImageCallback(self, rgb_image_data , depth_image_data):
         try:
             rgb_image = self.cv_bridge.imgmsg_to_cv2(rgb_image_data, 'passthrough')
+            self.m_depth_image = self.cv_bridge.imgmsg_to_cv2(depth_image_data, 'passthrough')
         except CvBridgeError, e:
             rospy.logerr(e)
 
         rgb_image.flags.writeable = True
-        rgb_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2RGB
+        rgb_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2RGB)
+        h, w, c = rgb_image.shape
 
         # 人がいる場合
         if self.person_bbox.probability > 0.0:
 
            # 一旦、BoundingBoxの中心位置の深度を取得 (今後改善予定）
-            m_person_depth = self.m_depth_image[(int)(self.person_bbox.ymax+self.person_bbox.ymin)/2][(int)(self.person_bbox.xmax+self.person_bbox.xmin)/2]
+            #m_person_depth = self.m_depth_image[(int)(self.person_bbox.ymax+self.person_bbox.ymin)/2][(int)(self.person_bbox.xmax+self.person_bbox.xmin)/2]
 
-            x1 = self.person_bbox.xmin
-            x2 = self.person_bbox.xmax
-            y1 = self.person_bbox.ymin
-            y2 = self.person_bbox.ymax
+            """
+            x1 = self.person_bbox.xmin + self.WIDTH 
+            x2 = self.person_bbox.xmax - self.WIDTH 
+            y1 = self.person_bbox.ymin + self.HEIGHT
+            y2 = self.person_bbox.ymax - self.HEIGHT
+            """
+
+            x1 = (w / 2) - self.WIDTH
+            x2 = (w / 2) + self.WIDTH
+            y1 = (h / 2) - self.HEIGHT
+            y2 = (h / 2) + self.HEIGHT
+
             sum = 0.0
-    
             for i in range(y1, y2):
                 for j in range(x1, x2):
                     rgb_image.itemset((i, j, 0), 0)
                     rgb_image.itemset((i, j, 1), 0)
-                    #color_image.itemset((100,100,2), 0)
+                    if self.m_depth_image.item(i,j) == self.m_depth_image.item(i,j):
+                        sum += self.m_depth_image.item(i,j)
     
-                    if m_depth_image.item(i,j) == m_depth_image.item(i,j):
-                        sum += m_depth_image.item(i,j)
-    
-            ave = sum / (((x2 - x1) * 2) * ((y2 - y1)* 2))
-            print("%f [m]" % ave)
+            #ave = sum / (((x2 - x1) * 2) * ((y2 - y1)* 2))
+            ave = sum / ((self.WIDTH * 2) * (self.HEIGHT * 2))
+            #print("%f [m]" % ave)
+            rospy.loginfo('Class : person, Score: %.2f, Dist: %dmm ' %(self.person_bbox.probability, ave))
 
+            #cv2.normalize(self.m_depth_image, self.m_depth_image, 0, 1, cv2.NORM_MINMAX)
+            #cv2.namedWindow("color_image")
+            #cv2.namedWindow("depth_image")
+            #cv2.imshow("color_image", rgb_image)
+            #cv2.imshow("depth_image", self.m_depth_image)
+            #cv2.waitKey(10)
+
+            """
             cv2.rectangle(rgb_image, (self.person_bbox.xmin, self.person_bbox.ymin), (self.person_bbox.xmax, self.person_bbox.ymax),(0,0,255), 2)
             #rospy.loginfo('Class : person, Score: %.2f, Dist: %dmm ' %(self.person_bbox.probability, m_person_depth))
-            text = "person " +('%dmm' % m_person_depth)
+            text = "person " +('%dmm' % ave)
             text_top = (self.person_bbox.xmin, self.person_bbox.ymin - 10)
             text_bot = (self.person_bbox.xmin + 80, self.person_bbox.ymin + 5)
             text_pos = (self.person_bbox.xmin + 5, self.person_bbox.ymin)
@@ -81,6 +105,7 @@ class PersonDetector():
         cv2.namedWindow("depth_image")
         cv2.imshow("depth_image", self.m_depth_image)
         cv2.waitKey(10)
+        """
         return
 
 

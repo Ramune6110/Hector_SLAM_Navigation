@@ -25,14 +25,13 @@ class PersonDetector():
         self.m_pub_threshold = rospy.get_param('~pub_threshold', 0.60)
 
         # detect width height
-        self.WIDTH  = 100
-        self.HEIGHT = 100
+        self.WIDTH  = 50
+        self.HEIGHT = 50
 
         # Subscribe
-        sub_camera_rgb     =  rospy.Subscriber('/camera/color/image_raw', Image, self.CamRgbImageCallback)
-        sub_camera_depth   =  rospy.Subscriber('/camera/aligned_depth_to_color/image_raw', Image, self.CamDepthImageCallback)
-        #sub_camera_depth   =  rospy.Subscriber('/camera/depth/image_rect_raw', Image, self.CamDepthImageCallback)
-        sub_darknet_bbox   =  rospy.Subscriber('/darknet_ros/bounding_boxes', BoundingBoxes, self.DarknetBboxCallback)
+        sub_camera_rgb    =  rospy.Subscriber('/camera/color/image_raw', Image, self.CamRgbImageCallback)
+        sub_camera_depth  =  rospy.Subscriber('/camera/aligned_depth_to_color/image_raw', Image, self.CamDepthImageCallback)
+        sub_darknet_bbox  =  rospy.Subscriber('/darknet_ros/bounding_boxes', BoundingBoxes, self.DarknetBboxCallback)
 
         return
 
@@ -49,16 +48,6 @@ class PersonDetector():
         # 人がいる場合
         if self.person_bbox.probability > 0.0:
 
-           # 一旦、BoundingBoxの中心位置の深度を取得 (今後改善予定）
-            #m_person_depth = self.m_depth_image[(int)(self.person_bbox.ymax+self.person_bbox.ymin)/2][(int)(self.person_bbox.xmax+self.person_bbox.xmin)/2]
-
-            """
-            x1 = self.person_bbox.xmin + self.WIDTH 
-            x2 = self.person_bbox.xmax - self.WIDTH 
-            y1 = self.person_bbox.ymin + self.HEIGHT
-            y2 = self.person_bbox.ymax - self.HEIGHT
-            """
-
             x1 = (w / 2) - self.WIDTH
             x2 = (w / 2) + self.WIDTH
             y1 = (h / 2) - self.HEIGHT
@@ -72,9 +61,9 @@ class PersonDetector():
                     if self.m_depth_image.item(i,j) == self.m_depth_image.item(i,j):
                         sum += self.m_depth_image.item(i,j)
     
-            #ave = sum / (((x2 - x1) * 2) * ((y2 - y1)* 2))
             ave = sum / ((self.WIDTH * 2) * (self.HEIGHT * 2))
-            print("%f [m]" % ave)
+            rospy.loginfo('Class : person, Score: %.2f, Dist: %dmm ' %(self.person_bbox.probability, ave))
+            #print("%f [m]" % ave)
 
             #cv2.normalize(self.m_depth_image, self.m_depth_image, 0, 1, cv2.NORM_MINMAX)
             #cv2.namedWindow("color_image")
