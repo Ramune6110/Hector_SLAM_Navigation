@@ -65,12 +65,12 @@ class PersonDetector():
             rospy.loginfo('Class : person, Score: %.2f, Dist: %dmm ' %(self.person_bbox.probability, ave))
             #print("%f [m]" % ave)
 
-            #cv2.normalize(self.m_depth_image, self.m_depth_image, 0, 1, cv2.NORM_MINMAX)
-            #cv2.namedWindow("color_image")
-            #cv2.namedWindow("depth_image")
-            #cv2.imshow("color_image", rgb_image)
-            #cv2.imshow("depth_image", self.m_depth_image)
-            #cv2.waitKey(10)
+            cv2.normalize(self.m_depth_image, self.m_depth_image, 0, 1, cv2.NORM_MINMAX)
+            cv2.namedWindow("color_image")
+            cv2.namedWindow("depth_image")
+            cv2.imshow("color_image", rgb_image)
+            cv2.imshow("depth_image", self.m_depth_image)
+            cv2.waitKey(10)
 
             """
             cv2.rectangle(rgb_image, (self.person_bbox.xmin, self.person_bbox.ymin), (self.person_bbox.xmax, self.person_bbox.ymax),(0,0,255), 2)
