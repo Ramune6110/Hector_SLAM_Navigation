@@ -7,6 +7,7 @@ import threading
 
 # This import is for ROS integration
 import rospy
+from std_msgs.msg import Int16
 from sensor_msgs.msg import Image,CameraInfo
 from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
@@ -28,6 +29,11 @@ class PersonDetector():
         self.WIDTH  = 50
         self.HEIGHT = 50
 
+        # Publish
+        self.pub_x_person     = rospy.Publisher('/x_person', Int16 , queue_size=10)
+        self.pub_x_centor     = rospy.Publisher('/x_centor', Int16 , queue_size=10)
+        self.pub_person_depth = rospy.Publisher('/person_depth', Int16 , queue_size=10)
+
         # Subscribe
         sub_camera_rgb    =  rospy.Subscriber('/camera/color/image_raw', Image, self.CamRgbImageCallback)
         sub_camera_depth  =  rospy.Subscriber('/camera/aligned_depth_to_color/image_raw', Image, self.CamDepthImageCallback)
@@ -48,6 +54,9 @@ class PersonDetector():
         # 人がいる場合
         if self.person_bbox.probability > 0.0:
 
+            x_person = (int)(self.person_bbox.xmax+self.person_bbox.xmin)/2
+            y_person = (int)(self.person_bbox.ymax+self.person_bbox.ymin)/2
+
             x1 = (w / 2) - self.WIDTH
             x2 = (w / 2) + self.WIDTH
             y1 = (h / 2) - self.HEIGHT
@@ -62,8 +71,17 @@ class PersonDetector():
                         sum += self.m_depth_image.item(i,j)
     
             ave = sum / ((self.WIDTH * 2) * (self.HEIGHT * 2))
-            rospy.loginfo('Class : person, Score: %.2f, Dist: %dmm ' %(self.person_bbox.probability, ave))
+            #rospy.loginfo('Class : person, Score: %.2f, Dist: %dmm ' %(self.person_bbox.probability, ave))
             #print("%f [m]" % ave)
+            print("%d" % x_person)
+            #print("%d" % y_person)
+
+            print("%d" % w)
+            print("%d" % h)
+
+            self.pub_x_person.publish(x_person)
+            self.pub_x_centor.publish(w / 2)
+            self.pub_person_depth.publish(ave)
 
             cv2.normalize(self.m_depth_image, self.m_depth_image, 0, 1, cv2.NORM_MINMAX)
             cv2.namedWindow("color_image")

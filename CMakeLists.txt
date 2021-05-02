@@ -9,15 +9,27 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   tf
   visualization_msgs
+  std_msgs
 )
 
 find_package(PkgConfig)
 pkg_search_module(yaml-cpp REQUIRED yaml-cpp)
 
+## Generate messages in the 'msg' folder
+#add_message_files(
+#  FILES
+#  Adder.msg
+#)
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
+
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES hector-slam-navigation
-  CATKIN_DEPENDS actionlib geometry_msgs move_base rospy roscpp tf visualization_msgs
+  CATKIN_DEPENDS actionlib geometry_msgs move_base rospy roscpp tf visualization_msgs std_msgs
 #  DEPENDS system_lib
 )
 
