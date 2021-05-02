@@ -7,6 +7,9 @@ import threading
 
 # This import is for ROS integration
 import rospy
+# 自分で定義したmessageファイルから生成されたモジュール
+from Hector_SLAM_Navigation.msg import object_data
+from geometry_msgs.msg import Twist
 from std_msgs.msg import Int16
 from sensor_msgs.msg import Image,CameraInfo
 from cv_bridge import CvBridge, CvBridgeError
@@ -30,9 +33,22 @@ class PersonDetector():
         self.HEIGHT = 50
 
         # Publish
+        """
         self.pub_x_person     = rospy.Publisher('/x_person', Int16 , queue_size=10)
         self.pub_x_centor     = rospy.Publisher('/x_centor', Int16 , queue_size=10)
         self.pub_person_depth = rospy.Publisher('/person_depth', Int16 , queue_size=10)
+        """
+        # nodeの宣言 : publisherのインスタンスを作る
+        # input_dataというtopicにAdder型のmessageを送るPublisherをつくった
+        self.pub = rospy.Publisher('/object_data', object_data, queue_size=10)
+ 
+        # object_data型のmessageのインスタンスを作る
+        self.msg = object_data()
+
+        self.pub_cmd = rospy.Publisher('cmd_vel', Twist, queue_size=10)
+
+        # Twist 型のデータ
+        self.t = Twist()
 
         # Subscribe
         sub_camera_rgb    =  rospy.Subscriber('/camera/color/image_raw', Image, self.CamRgbImageCallback)
@@ -72,23 +88,54 @@ class PersonDetector():
     
             ave = sum / ((self.WIDTH * 2) * (self.HEIGHT * 2))
             #rospy.loginfo('Class : person, Score: %.2f, Dist: %dmm ' %(self.person_bbox.probability, ave))
-            #print("%f [m]" % ave)
-            print("%d" % x_person)
+            print("%f [m]" % ave)
+            #print("%d" % x_person)
             #print("%d" % y_person)
 
-            print("%d" % w)
-            print("%d" % h)
+            #print("%d" % w)
+            #print("%d" % h)
 
+            """
             self.pub_x_person.publish(x_person)
             self.pub_x_centor.publish(w / 2)
             self.pub_person_depth.publish(ave)
+            """
+            self.msg.x_person = x_person
+            self.msg.person_distance = ave
 
+            # publishする関数
+            self.pub.publish(self.msg)
+            #print "published arg_x=%d arg_y=%d"%(self.msg.x_person, self.msg.person_distance)
+
+            velocity = 0
+            rotation = 0
+            error = x_person - 320
+            controll_gain = 0.004
+
+            if error > 0:
+                velocity = 0.0
+                #rotation = -0.35
+                rotation = -controll_gain * error
+            elif error < 0:
+                velocity = 0.0
+                #rotation = 0.35
+                rotation = -controll_gain * error
+            elif ave < 200.0:
+                velocity = 0.0
+                rotation = 0.0
+
+            self.t.linear.x = velocity
+            self.t.angular.z = rotation
+            self.pub_cmd.publish(self.t)
+
+            """
             cv2.normalize(self.m_depth_image, self.m_depth_image, 0, 1, cv2.NORM_MINMAX)
             cv2.namedWindow("color_image")
             cv2.namedWindow("depth_image")
             cv2.imshow("color_image", rgb_image)
             cv2.imshow("depth_image", self.m_depth_image)
             cv2.waitKey(10)
+            """
 
             """
             cv2.rectangle(rgb_image, (self.person_bbox.xmin, self.person_bbox.ymin), (self.person_bbox.xmax, self.person_bbox.ymax),(0,0,255), 2)
