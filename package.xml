@@ -19,7 +19,6 @@
   <build_depend>visualization_msgs</build_depend> 
   <build_depend>std_msgs</build_depend> 
   <build_depend>message_generation</build_depend>
-  <!--<build_depend>Hector_SLAM_Navigation</build_depend>-->
 
   <build_export_depend>rospy</build_export_depend>
   <build_export_depend>roscpp</build_export_depend>

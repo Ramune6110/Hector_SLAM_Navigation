@@ -1,2 +1,0 @@
-int16 x_person
-int16 person_distance
