@@ -109,7 +109,6 @@ class PersonDetector():
             cv2.imshow("depth_image", self.m_depth_image)
             cv2.waitKey(10)
             """
-
             """
             cv2.rectangle(rgb_image, (self.person_bbox.xmin, self.person_bbox.ymin), (self.person_bbox.xmax, self.person_bbox.ymax),(0,0,255), 2)
             #rospy.loginfo('Class : person, Score: %.2f, Dist: %dmm ' %(self.person_bbox.probability, m_person_depth))
@@ -119,7 +118,8 @@ class PersonDetector():
             text_pos = (self.person_bbox.xmin + 5, self.person_bbox.ymin)
             cv2.rectangle(rgb_image, text_top, text_bot, (0,0,0),-1)
             cv2.putText(rgb_image, text, text_pos, cv2.FONT_HERSHEY_SIMPLEX, 0.35, (255, 0, 255), 1)
-
+            """
+        """
         cv2.namedWindow("rgb_image")
         cv2.imshow("rgb_image", rgb_image)
         cv2.waitKey(10)
