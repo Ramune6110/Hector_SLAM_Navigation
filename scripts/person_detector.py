@@ -111,7 +111,7 @@ class PersonDetector():
             rotation = 0
             error_angle = x_person - 320
             error_distance = ave - 150
-            controll_angle_gain = 0.004
+            controll_angle_gain = 0.006
             controll_distance_gain = 0.0004
 
             """
@@ -132,15 +132,15 @@ class PersonDetector():
                 #velocity = 0.0
                 #rotation = -0.35
                 velocity = controll_distance_gain * error_distance
-                if velocity > 0.25:
-                    velocity = 0.25
+                if velocity > 0.2:
+                    velocity = 0.2
                 rotation = -controll_angle_gain * error_angle
             elif error_angle < 0 and ave > 300:
                 #velocity = 0.0
                 #rotation = 0.35
                 velocity = controll_distance_gain * error_distance
-                if velocity > 0.25:
-                    velocity = 0.25
+                if velocity > 0.2:
+                    velocity = 0.2
                 rotation = -controll_angle_gain * error_angle
             else:
                 velocity = 0.0
